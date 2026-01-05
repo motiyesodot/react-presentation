@@ -1,0 +1,156 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: flex-start;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* --- Layout Header --- */
+header {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background-color: #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* תיקון למבנה של button בתוך Link */
+header button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+header a {
+  display: inline-block;
+  padding: 0.8em 1.4em;
+  border-radius: 8px;
+  background-color: #1a1a1a;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.25s;
+  border: 1px solid transparent;
+}
+
+header a:hover {
+  border-color: #646cff;
+  background-color: #252525;
+  transform: translateY(-2px);
+}
+
+/* --- Main Content Area --- */
+main {
+  padding: 2rem;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background-color: #2a2a2a;
+  min-height: 300px;
+}
+
+/* --- Forms & Inputs --- */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+input {
+  padding: 0.8em 1.2em;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: #1a1a1a;
+  color: white;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: 2px solid #646cff;
+  border-color: transparent;
+}
+
+/* --- Buttons (General) --- */
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* --- Light Mode Overrides --- */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  
+  header {
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  header a, button {
+    background-color: #ffffff;
+    color: #213547;
+    border: 1px solid #ccc;
+  }
+  
+  main {
+    background-color: #f9f9f9;
+    border-color: #eee;
+  }
+
+  input {
+    background-color: #fff;
+    color: #213547;
+    border-color: #ccc;
+  }
+}
