@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React useEffect - בעיות ופתרונות</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Rubik:wght@300;400;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --accent-primary: #38bdf8; /* Light Blue */
+      --accent-success: #4ade80; /* Green */
+      --accent-danger: #f87171; /* Red */
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Rubik', sans-serif;
+      background: radial-gradient(circle at 50% 10%, #1e293b, #0f172a);
+      color: var(--text-main);
+      overflow: hidden; /* מבטל גלילה רגילה */
+    }
+
+    /* מיכל הגלילה הראשי */
+    main {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    /* עיצוב שקף בודד */
+    section {
+      height: 100vh;
+      width: 100%;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    /* אפקט רקע עדין */
+    section::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--accent-primary);
+    }
+
+    h2.bad { border-color: var(--accent-danger); color: var(--accent-danger); }
+    h2.good { border-color: var(--accent-success); color: var(--accent-success); }
+
+    /* קונטיינר של קוד */
+    .code-wrapper {
+      background: #020617;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      text-align: left; /* קוד תמיד משמאל לימין */
+      direction: ltr;
+    }
+
+    /* כותרת לחלון הקוד */
+    .code-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: #1e293b;
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      align-items: center;
+      padding-left: 15px;
+      gap: 6px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #eab308; }
+    .dot.green { background: #22c55e; }
+
+    pre {
+      margin: 10px 0 0 0;
+      font-family: 'Fira Code', monospace;
+      font-size: 1.4rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+    }
+
+    /* הדגשות קוד פשוטות */
+    .kwd { color: #c084fc; font-weight: bold; } /* Keywords */
+    .fn { color: #60a5fa; } /* Functions */
+    .num { color: #facc15; } /* Numbers/Values */
+    .str { color: #4ade80; } /* Strings */
+
+    ul {
+      list-style: none;
+      padding: 0;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    li {
+      margin-bottom: 1rem;
+      background: var(--card-bg);
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      backdrop-filter: blur(5px);
+      transition: transform 0.2s;
+    }
+    
+    li:hover {
+      transform: scale(1.02);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    .note {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+    }
+
+    /* חיווי ניווט בתחתית */
+    .nav-hint {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      opacity: 0.6;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+      40% {transform: translateY(-10px);}
+      60% {transform: translateY(-5px);}
+    }
+
+  </style>
+</head>
+<body>
+
+<main id="slider">
+
+  <section>
+    <h1>❓ מה הבעיה בקוד הבא?</h1>
+    <div class="code-wrapper">
+      <div class="code-header">
+        <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+      </div>
+      <pre>
+<span class="fn">useEffect</span>(() => {
+  <span class="fn">setInterval</span>(() => {
+    <span class="fn">setSeconds</span>(seconds + <span class="num">1</span>);
+  }, <span class="num">1000</span>);
+}, []);
+      </pre>
+    </div>
+    <div class="nav-hint">▼ השתמש בחצים למעלה/למטה כדי לנווט</div>
+  </section>
+
+  <section>
+    <h2 class="bad">❌ בעיה #1 – אין ניקוי (Cleanup)</h2>
+    <ul>
+      <li>🏃‍♂️ ה־Interval ממשיך לרוץ לנצח</li>
+      <li>👻 קורה גם כשהקומפוננטה יוצאת מהמסך (Unmount)</li>
+      <li>💥 גורם לזליגת זיכרון (Memory Leak) ובאגים</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="bad">❌ בעיה #2 – תלויות שגויות (Stale Closure)</h2>
+    <div class="code-wrapper" style="border-color: var(--accent-danger);">
+      <div class="code-header"><div class="dot red"></div></div>
+      <pre>
+<span class="fn">setSeconds</span>(seconds + <span class="num">1</span>);
+
+<span class="note">// ... בהמשך הקוד</span>
+}, []); <span class="note">// התלות ריקה!</span>
+      </pre>
+    </div>
+    <ul>
+      <li>useEffect רץ <strong>פעם אחת</strong> בלבד (בגלל הסוגריים הריקים)</li>
+      <li>המשתנה <code>seconds</code> "נתקע" על הערך ההתחלתי</li>
+      <li>הקוד תמיד יציג: 0 + 1 = 1</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="good">✅ הפתרון הנכון</h2>
+    <div class="code-wrapper" style="border-color: var(--accent-success);">
+      <div class="code-header">
+        <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+      </div>
+      <pre>
+<span class="fn">useEffect</span>(() => {
+  <span class="kwd">const</span> id = <span class="fn">setInterval</span>(() => {
+    <span class="note">// שימוש ב-Callback כדי לקבל ערך עדכני</span>
+    <span class="fn">setSeconds</span>(<span class="kwd">prev</span> => <span class="kwd">prev</span> + <span class="num">1</span>);
+  }, <span class="num">1000</span>);
+
+  <span class="note">// פונקציית הניקוי רצה ב-Unmount</span>
+  <span class="kwd">return</span> () => <span class="fn">clearInterval</span>(id);
+}, []);
+      </pre>
+    </div>
+  </section>
+
+  <section>
+    <h1>🎯 המסר לבית</h1>
+    <ul>
+      <li>⚠️ קוד ש"רץ" הוא לא תמיד קוד נכון</li>
+      <li>🧹 כל תהליך מתמשך (Event, Interval) חייב <strong>Cleanup</strong></li>
+      <li>🔄 שינוי State בתוך אפקט? השתמשו ב-<strong>Updater Function</strong> (prev)</li>
+    </ul>
+  </section>
+
+</main>
+
+<script>
+  // סקריפט לניווט נוח עם המקלדת
+  document.addEventListener('keydown', (e) => {
+    const slider = document.getElementById('slider');
+    const height = window.innerHeight;
+    
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+      e.preventDefault(); // מניעת גלילה כפולה
+      slider.scrollBy({ top: height, behavior: 'smooth' });
+    } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault();
+      slider.scrollBy({ top: -height, behavior: 'smooth' });
+    }
+  });
+</script>
+
+</body>
+</html>

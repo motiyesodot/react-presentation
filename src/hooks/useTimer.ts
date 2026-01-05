@@ -4,14 +4,12 @@ export default function useTimer() {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setSeconds(prev => prev + 1);
+    setInterval(() => {
+      setSeconds(seconds + 1);
       console.log("timer start");
     }, 1000);
 
-    return () => {clearInterval(id); console.log("timer stop");
-    }
   }, []);
 
-  return [seconds]
+  return seconds
 };
